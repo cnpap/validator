@@ -16,12 +16,12 @@ class ValidatorInvalidArgumentException extends InvalidArgumentException
 class ValidateFailException extends RuntimeException
 {
     public $path;
-    public $rule;
+    public $ruleInfo;
 
-    function __construct($path, $rule)
+    function __construct($path, $ruleInfo)
     {
         $this->path = $path;
-        $this->rule = $rule;
+        $this->ruleInfo = $ruleInfo;
     }
 }
 
@@ -120,7 +120,7 @@ class Validator
 
             if ($result !== true)
             {
-                throw new ValidateFailException($columnInfo['column'], $ruleInfo[0]);
+                throw new ValidateFailException($columnInfo['column'], $ruleInfo);
             }
         }
     }
