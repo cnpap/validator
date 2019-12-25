@@ -16,12 +16,14 @@ class ValidatorInvalidArgumentException extends InvalidArgumentException
 class ValidateFailException extends RuntimeException
 {
     public $path;
-    public $ruleInfo;
+    public $ruleName;
+    public $ruleParams;
 
-    function __construct($path, $ruleInfo)
+    function __construct($path, $ruleName, $ruleParams = null)
     {
         $this->path = $path;
-        $this->ruleInfo = $ruleInfo;
+        $this->ruleName = $ruleName;
+        $this->ruleParams = $ruleParams;
     }
 }
 
@@ -57,7 +59,7 @@ class Validator
         }
         else
         {
-            $endDatum = $data[$firstPath];
+            $endDatum = $data[$firstPath] ?? null;
 
             if ($columnInfo['count'] && is_string($endDatum))
             {
@@ -68,7 +70,7 @@ class Validator
         $emptyString = is_string($endDatum) && strlen($endDatum) === 0;
         $emptyArray = is_array($endDatum) && count($endDatum) === 0;
 
-        if ($emptyString || $emptyArray)
+        if ($emptyString || $emptyArray || is_null($endDatum))
         {
             if (preg_match('@must@', $rules))
             {
@@ -78,7 +80,7 @@ class Validator
             return;
         }
 
-        $rules = preg_replace('@[|]?must[|]?@', '', $rules);
+        $rules = preg_replace('@[&]?[&]?must[&]?[&]?@', '', $rules);
 
         if ($firstPath === '*')
         {
@@ -93,7 +95,7 @@ class Validator
             {
                 foreach ($data as $datum)
                 {
-                    self::validatePipeLine($datum, explode('|', $rules));
+                    self::validatePipeLine($datum, explode('&&', $rules));
                 }
             }
         }
@@ -105,7 +107,7 @@ class Validator
             }
             else
             {
-                self::validatePipeLine($endDatum, $columnInfo, explode('|', $rules));
+                self::validatePipeLine($endDatum, $columnInfo, explode('&&', $rules));
             }
         }
     }
@@ -115,12 +117,23 @@ class Validator
         foreach ($rules as $rule)
         {
             $ruleInfo = explode(':', $rule);
-            $method = $ruleInfo[0] . 'Check';
-            $result = self::$handle->{$method}($data);
+            $ruleName = $ruleInfo[0];
+            $ruleParams = $ruleInfo[1] ?? null;
+
+            $method = $ruleName . 'Check';
+
+            $validateParams = [$data];
+
+            if ($ruleParams !== null)
+            {
+                $validateParams[] = $ruleParams;
+            }
+
+            $result = self::$handle->{$method}(...$validateParams);
 
             if ($result !== true)
             {
-                throw new ValidateFailException($columnInfo['column'], $ruleInfo);
+                throw new ValidateFailException($columnInfo['column'], $ruleName, $ruleParams);
             }
         }
     }
