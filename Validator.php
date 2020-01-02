@@ -95,7 +95,7 @@ class Validator
             {
                 foreach ($data as $datum)
                 {
-                    self::validatePipeLine($datum, explode('&&', $rules));
+                    self::validatePipeLine($datum, $columnInfo, explode('&&', $rules));
                 }
             }
         }
