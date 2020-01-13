@@ -1,6 +1,6 @@
 <?php
 
-namespace SuoLong\Validator;
+namespace Suolong\Validator;
 
 use InvalidArgumentException;
 use RuntimeException;
