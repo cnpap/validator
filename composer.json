@@ -2,11 +2,15 @@
     "name": "justlikesuolong/validator",
     "description": "容易扩展的验证器",
     "require": {
-        "php": ">=7.4.0"
+        "php": ">=7.0.0",
+        "justlikesuolong/psr15": "^1.0"
     },
     "autoload": {
         "psr-4": {
             "Suolong\\Validator\\": "./"
-        }
+        },
+        "files": [
+            "functions.php"
+        ]
     }
 }

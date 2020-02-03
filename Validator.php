@@ -2,31 +2,6 @@
 
 namespace Suolong\Validator;
 
-use InvalidArgumentException;
-use RuntimeException;
-
-class ValidatorInvalidArgumentException extends InvalidArgumentException
-{
-    function __construct()
-    {
-        parent::__construct('所提供数据格式有误');
-    }
-}
-
-class ValidateFailException extends RuntimeException
-{
-    public $path;
-    public $ruleName;
-    public $ruleParams;
-
-    function __construct($path, $ruleName, $ruleParams = null)
-    {
-        $this->path = $path;
-        $this->ruleName = $ruleName;
-        $this->ruleParams = $ruleParams;
-    }
-}
-
 class Validator
 {
     static $handle;
