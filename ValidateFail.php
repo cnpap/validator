@@ -15,7 +15,7 @@ class ValidateFail implements MiddlewareInterface
         try {
             return $handle->handle($request);
         } catch (ValidateFailException $e) {
-            $conf = $request->getAttribute('conf');
+            $conf = $request->getAttribute('conf')['validator'];
             $params = $conf[0][$e->path] ?? $e->path;
             $message = $conf[0][$e->ruleName] ?? $e->ruleName;
             if ($e->ruleParams) {
