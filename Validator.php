@@ -43,7 +43,7 @@ class Validator
         }
 
         $emptyString = is_string($endDatum) && strlen($endDatum) === 0;
-        $emptyArray = is_array($endDatum) && count($endDatum) === 0;
+        $emptyArray  = is_array($endDatum) && count($endDatum) === 0;
 
         if ($emptyString || $emptyArray || is_null($endDatum))
         {
@@ -91,12 +91,10 @@ class Validator
     {
         foreach ($rules as $rule)
         {
-            $ruleInfo = explode(':', $rule);
-            $ruleName = $ruleInfo[0];
-            $ruleParams = $ruleInfo[1] ?? null;
-
-            $method = $ruleName . 'Check';
-
+            $ruleInfo       = explode(':', $rule);
+            $ruleName       = $ruleInfo[0];
+            $ruleParams     = $ruleInfo[1] ?? null;
+            $method         = $ruleName . 'Check';
             $validateParams = [$data];
 
             if ($ruleParams !== null)
