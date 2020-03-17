@@ -4,16 +4,16 @@ namespace Suolong\Validator;
 
 class Validator
 {
-    static $handle;
+    static $handles = [];
 
     static function validate($data, $conditions)
     {
         foreach ($conditions as $column => $rules)
         {
-            $columnInfo = [];
+            $columnInfo           = [];
             $columnInfo['column'] = $column;
-            $columnInfo['item'] = explode('.', $column);
-            $columnInfo['count'] = count($columnInfo['item']);
+            $columnInfo['item']   = explode('.', $column);
+            $columnInfo['count']  = count($columnInfo['item']);
             self::validateStack($data, $columnInfo, $rules);
         }
     }
@@ -43,7 +43,7 @@ class Validator
         }
 
         $emptyString = is_string($endDatum) && strlen($endDatum) === 0;
-        $emptyArray  = is_array($endDatum) && count($endDatum) === 0;
+        $emptyArray  = is_array($endDatum)  && count($endDatum) === 0;
 
         if ($emptyString || $emptyArray || is_null($endDatum))
         {
@@ -102,7 +102,16 @@ class Validator
                 $validateParams[] = $ruleParams;
             }
 
-            $result = self::$handle->{$method}(...$validateParams);
+            $result = false;
+            
+            foreach (self::$handles as $handle) 
+            {
+                if (method_exists($handle, $method))
+                {
+                    $result = $handle->{$method}(...$validateParams);
+                    continue;
+                }
+            }
 
             if ($result !== true)
             {
