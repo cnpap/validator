@@ -2,6 +2,8 @@
 
 namespace Suolong\Validator;
 
+use RuntimeException;
+
 class Validator
 {
     static $handles = [];
@@ -102,15 +104,22 @@ class Validator
                 $validateParams[] = $ruleParams;
             }
 
-            $result = false;
+            $result       = false;
+            $methodExists = false;
             
             foreach (self::$handles as $handle) 
             {
                 if (method_exists($handle, $method))
                 {
-                    $result = $handle->{$method}(...$validateParams);
+                    $methodExists = true;
+                    $result       = $handle->{$method}(...$validateParams);
                     continue;
                 }
+            }
+
+            if ($methodExists === false)
+            {
+                throw new RuntimeException('验证器缺少验证规则:' . $ruleName);
             }
 
             if ($result !== true)

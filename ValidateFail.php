@@ -33,30 +33,41 @@ class ValidateFail implements MiddlewareInterface
 
     function process(ServerRequestInterface $request, RequestHandlerInterface $handle): ResponseInterface
     {
-        try {
+        try 
+        {
             Validator::$handles[] = new ValidateHandle;
             return $handle->handle($request);
-        } catch (ValidateFailException $e) {
+        } 
+        catch (ValidateFailException $e) 
+        {
             $conf        = $request->getAttribute('validator') ?? [];
             $translation = $e->path;
+
             if (isset($conf['translation']))
             {
                 $translation = $conf['translation'][$e->path] ?? $translation;
             }
+
             $template = static::TEMPLATE . $e->ruleName;
             $template = static::TEMPLATES[$e->ruleName] ?? $template;
+
             if (isset($conf['template']))
             {
                 $template = $conf['template'][$e->ruleName] ?? $template;
             }
+
             $params = $translation;
+
             if ($e->ruleParams) {
                 $params .= ',' . $e->ruleParams;
             }
+
             $params = explode(',', $params);
             http_response_code(404);
             exit(sprintf($template, ...$params));
-        } catch (Exception $e) {
+        } 
+        catch (Exception $e) 
+        {
             throw $e;
         }
     }
